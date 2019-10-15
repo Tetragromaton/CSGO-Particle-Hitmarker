@@ -14,6 +14,7 @@
 #include <sdkhooks>
 #include <clientprefs>
 #include <zombiereloaded>
+bool IgnoreHits[MAXPLAYERS + 1];
 //#pragma newdecls required
 #define foreach(%0) for (int %0 = 1; %0 <= MaxClients; %0++) if (IsClientInGame(%0) && !IsFakeClient(%0))
 EngineVersion g_Game;
@@ -75,36 +76,87 @@ public OnPlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
 	{
 		if(client != attacker)
 		{
-			if(GetCookieInt(client, g_Setting_ParamX) < 1)
+			if(GetCookieInt(attacker, g_Setting_ParamX) < 1)
 			{
 			//If player have hitmarkers toggled off, dont show it to him then ????
 			//Take in mind that we shouldn't display hitmarker if we killed someone.
-			if(ZR_IsClientHuman(client))
+			
+			if(ZR_IsClientHuman(attacker) && ZR_IsClientZombie(client))
 			{
 				//Display particle that human has killed zombie.
-			} else if(ZR_IsClientZombie(client))
-			{
-				//Display particle that zombie has infected human.
+				if(IgnoreHits[client] == true)
+				{
+					//Display hitmarker for attacker that zombie is killed.
+				}
 			}
+			//Particle thingy for zombie we display on ZR_OnClientInfected callback.
 			}
 			//if(GetCookieInt(9))
 		}
 	}
 }
-
+public ZR_OnClientInfected(client, attacker)
+{
+	//PrintToChatAll("debug: client->%i attacker->%i", client, attacker);
+	if(client != attacker)
+	{
+		if (!IsValidEntity(client) || !IsValidEntity(attacker))return;//We have to have only this situation (Player Infected Other Player), else do nothing.
+		//PrintToChatAll("FINE");
+		//Display infected someone particle.
+	}
+}
 public Action:OnTakeDamage(client, &attacker, &inflictor, &Float:damage, &damagetype, &weapon, Float:damageForce[3], Float:damagePosition[3])
 {
 	//PrintToChat(client, "DEBUG ALL FINE");
 	if(GetCookieInt(client, g_Setting_ClientSound) < 1) EmitSoundToClient(attacker, "wefliem/hit.mp3");
 	if(GetCookieInt(client, g_Setting_ParamX) < 1)
 	{
+	int health = GetEntProp(client, Prop_Send, "m_iHealth");
+	//PrintToChat(attacker, "%i", health);
+	if (!IsValidEntity(client) || !IsValidEntity(attacker))return;//To make sure client has not dealt damage to himself or damage goes from world or etc..
+	if (ZR_IsClientZombie(attacker))return;//Zombies must see only infection skull thingy
+	if(health < 10)
+	{
+		//Zombie has too much HP and about to die.
+		//We have to keep in mind that we have to display partcile that zombie was killed.
+		IgnoreHits[client] = true;
+		return;
+	} else IgnoreHits[client] = false;
+	char particlename[64];
 	if(damage > 100.0)
 	{
+		
 		//DIsplay particle with damage > 100 (yellow or some kind of this shit)
 	}else {
-		//Display particle with damage < 100 (usual)
+		particlename = "burning_3hitmarkerg_copy";
 	}
+	float pos[3];
+	float ang[3];
+	GetClientAbsOrigin(attacker, pos);
+	GetClientAbsAngles(attacker, ang);
+	int ent = CreateEntityByName("info_particle_system");
+	if(ent == -1) SetFailState("Error creating \"info_particle_system\" entity!");		
+	TeleportEntity(ent, pos, ang, NULL_VECTOR);		
+	DispatchKeyValue(ent, "effect_name", particlename);
+	DispatchKeyValue(ent, "start_active", "1");
+	DispatchSpawn(ent);
+	ActivateEntity(ent);
+	SetEntPropEnt(ent, Prop_Send, "m_hOwnerEntity", attacker);
+	SDKHook(ent, SDKHook_SetTransmit, SetTransmit_Hook);
+	SetVariantString("OnUser1 !self:kill::0.3:-1");
+	AcceptEntityInput(ent, "AddOutput");
+	AcceptEntityInput(ent, "FireUser1");
 	}
+}
+public Action SetTransmit_Hook(int entity, int client)
+{
+	if(GetEdictFlags(entity) & FL_EDICT_ALWAYS)
+		SetEdictFlags(entity, (GetEdictFlags(entity) ^ FL_EDICT_ALWAYS));
+	
+	if(GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity") == client || GetEntPropEnt(client, Prop_Send, "m_hObserverTarget") == GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity") && GetEntProp(client, Prop_Send, "m_iObserverMode") == 4 || GetEntProp(client, Prop_Send, "m_iObserverMode") == 5)
+		return Plugin_Continue;
+	
+	return Plugin_Stop;
 }
 public Action Cmd_ToggleShit(client,args)
 {
