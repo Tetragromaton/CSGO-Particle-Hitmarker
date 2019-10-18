@@ -1,0 +1,31 @@
+"Phrases"
+{
+	"GBRICK Menu Hitmarker"
+	{
+		"ru"		"Хитмаркер"
+	}
+	"GBIRCK Menu Sound"
+	{
+		"ru"		"Звук попадания"
+	}
+	"Toggle Hitmarker"
+	{
+		"ru"	"Хитмаркер"
+	}
+	"Toggle Sound"
+	{
+		"ru"	"Звук хитмаркера"
+	}
+	"ON420"
+	{
+		"ru"	"ВКЛ"
+	}
+	"OFF420"
+	{
+		"ru"	"ВЫКЛ"
+	}
+	"Title333"
+	{
+		"ru"	"Хитмаркер & Звуки"
+	}
+}

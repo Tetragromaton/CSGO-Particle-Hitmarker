@@ -1,0 +1,31 @@
+﻿"Phrases"
+{
+	"GBRICK Menu Hitmarker"
+	{
+		"en"		"Hitmarkers"
+	}
+	"GBIRCK Menu Sound"
+	{
+		"en"		"Hit sound"
+	}
+	"Toggle Hitmarker"
+	{
+		"en"	"Hitmarker"
+	}
+	"Toggle Sound"
+	{
+		"en"	"Hit sound for hitmarker"
+	}
+	"ON420"
+	{
+		"en"	"ON"
+	}
+	"OFF420"
+	{
+		"en"	"OFF"
+	}
+	"Title333"
+	{
+		"en"	"Hitmarker & Sounds"
+	}
+}

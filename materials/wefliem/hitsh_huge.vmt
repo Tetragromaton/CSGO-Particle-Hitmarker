@@ -1,0 +1,6 @@
+"UnlitGeneric"
+{
+	"$basetexture" "wefliem/hitsh_huge"
+	"$nocull" 1
+	"$translucent" 1
+}
