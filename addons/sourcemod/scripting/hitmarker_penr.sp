@@ -15,7 +15,7 @@ bool IgnoreHits[MAXPLAYERS + 1];
 int Hitmarker[MAXPLAYERS + 1];
 #define foreach(%0) for (int %0 = 1; %0 <= MaxClients; %0++) if (IsClientInGame(%0) && !IsFakeClient(%0))
 EngineVersion g_Game;
-
+char cmdname[255] = "toggleh"; //Change it to the cmd you want.
 public Plugin myinfo = 
 {
 	name = "Hitmarkers",
@@ -28,7 +28,6 @@ public Plugin myinfo =
 
 Handle g_Setting_ParamX;
 Handle g_Setting_ClientSound;
-
 public void OnPluginStart()
 {
 	g_Game = GetEngineVersion();
@@ -39,8 +38,8 @@ public void OnPluginStart()
 	g_Setting_ParamX = RegClientCookie("hitmarker_toggled", "", CookieAccess_Private);
 	g_Setting_ClientSound = RegClientCookie("hitmarker_sound_toggled", "", CookieAccess_Private);
 	HookEvent("player_death", OnPlayerDeath);
-	RegConsoleCmd("toggleh", Cmd_ToggleShit_FIX);
-	RegConsoleCmd("togglehh", Cmd_ToggleShit);
+	RegConsoleCmd(cmdname, Cmd_ToggleShit_FIX);
+	RegConsoleCmd("togglehh", Cmd_ToggleShit);//Dont change it. This is for translation fix.
 	HookEvent("round_start", OnRoundStart);
 	DoHandle();
 	DownloadShit();
@@ -48,6 +47,7 @@ public void OnPluginStart()
 }
 public Action Cmd_ToggleShit_FIX(client,args)
 {
+	//REWOKE(client);
 	FakeClientCommand(client, "togglehh");
 	//Dunno what's wrong but it fixes trouble with translates
 	return Plugin_Handled;
@@ -266,13 +266,13 @@ public SetaFunctionelSWITCH(Handle:menu, MenuAction:action, param1, param2)
 				{
 					PrintToChat(param1, "%t: %t", "Toggle Hitmarker", "ON420");
 					SetClientCookieInt(param1, g_Setting_ParamX, 0);
-					FakeClientCommand(param1, "toggleh");
+					FakeClientCommand(param1, cmdname);
 				}else
 				{
 					PrintToChat(param1, "%t: %t", "Toggle Hitmarker", "OFF420");
 					SetClientCookieInt(param1, g_Setting_ParamX, 1);
 					//PrintToChat(param1, "Хитмаркер: ВЫКЛ");
-					FakeClientCommand(param1, "toggleh");
+					FakeClientCommand(param1, cmdname);
 				}
 			}else if(StrEqual(item, "stoggle"))
 			{
@@ -281,11 +281,11 @@ public SetaFunctionelSWITCH(Handle:menu, MenuAction:action, param1, param2)
 				{
 					PrintToChat(param1, "%t: %t", "Toggle Sound", "ON420");
 					SetClientCookieInt(param1, g_Setting_ClientSound, 0);
-					FakeClientCommand(param1, "toggleh");
+					FakeClientCommand(param1, cmdname);
 				}else {
 					PrintToChat(param1, "%t: %t", "Toggle Sound", "OFF420");
 					SetClientCookieInt(param1, g_Setting_ClientSound, 1);
-					FakeClientCommand(param1, "toggleh");
+					FakeClientCommand(param1, cmdname);
 				}
 			}
 		}
