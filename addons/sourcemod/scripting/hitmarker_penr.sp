@@ -185,6 +185,9 @@ DoParticle(client, const char[] name, const char[] InputShit)
 public Action:OnTakeDamage(client, &attacker, &inflictor, &Float:damage, &damagetype, &weapon, Float:damageForce[3], Float:damagePosition[3])
 {
 	if (client == attacker)return Plugin_Continue;//Dont mess with ourselves.
+	int team_vi = GetClientTeam(client);
+	int team_at = GetClientTeam(attacker);
+	if (team_vi == team_at)return Plugin_Continue;
 	int sound = GetCookieInt(attacker, g_Setting_ClientSound);
 	int ovr = GetCookieInt(attacker, g_Setting_ParamX);
 	if(sound < 1) EmitSoundToClient(attacker, "wefliem/hit.mp3");
