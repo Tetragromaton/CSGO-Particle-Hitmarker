@@ -182,9 +182,18 @@ DoParticle(client, const char[] name, const char[] InputShit)
 	AcceptEntityInput(ent, "AddOutput");
 	AcceptEntityInput(ent, "FireUser1");
 }
+bool:IsValidClient( client ) 
+{
+    if ( !( 1 <= client <= MaxClients ) || !IsClientInGame(client) ) 
+        return false; 
+     
+    return true; 
+} 
 public Action:OnTakeDamage(client, &attacker, &inflictor, &Float:damage, &damagetype, &weapon, Float:damageForce[3], Float:damagePosition[3])
 {
 	if (client == attacker)return Plugin_Continue;//Dont mess with ourselves.
+	if (!IsValidClient(client))return Plugin_Continue;
+	if (!IsValidClient(attacker))return Plugin_Continue;
 	int team_vi = GetClientTeam(client);
 	int team_at = GetClientTeam(attacker);
 	if (team_vi == team_at)return Plugin_Continue;
